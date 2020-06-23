@@ -1,0 +1,180 @@
+# These are the emails you will be censoring. The open() function is opening the text file that the emails are contained in and the .read() method is allowing us to save their contexts to the following variables:
+email_one = open("email_one.txt", "r").read()
+email_two = open("email_two.txt", "r").read()
+email_three = open("email_three.txt", "r").read()
+email_four = open("email_four.txt", "r").read()
+
+#FOR TASK 1:
+#Function to censor specific word/phrase from body of text (email 1)
+def censor_email_one(email, phrase_to_censor):
+  #taking into account upper/lowercase and capitalizations in email
+  email_lower = email.lower()
+  phrase_lower = phrase_to_censor.lower()
+  phrase_capitalized = phrase_to_censor.capitalize()
+  phrase_upper = phrase_to_censor.upper()
+  #need to preserve length of censored word:
+  censor = ""
+  for index in range(len(phrase_to_censor)):
+    if phrase_to_censor[index] != " ":
+      censor += "*"
+    else:
+      censor += " "
+  if phrase_lower in email_lower:
+    email = email.replace(phrase_to_censor, censor)
+  if phrase_capitalized in email:
+    email = email.replace(phrase_capitalized, censor)
+  if phrase_upper in email:
+    email = email.replace(phrase_upper, censor)
+  return email
+
+#Test on email 1:
+#print(censor_email_one(email_one, "learning algorithms"))
+
+#FOR TASK 2:
+#list of proprietary terms to censor
+proprietary_terms = ["she", "personality matrix", "sense of self", "self-preservation", "learning algorithm", "her", "herself"]
+
+#Function that can censor list of words/phrases from text
+def censor_email_two(email, list_to_censor):
+  #take into account case sensitivity in email
+  email_lower = email.lower()
+  for term in list_to_censor:
+    term_lower = term.lower()
+    term_title = term.title()
+    term_capitalized = term.capitalize()
+    term_upper = term.upper()
+    censor = ""
+    for index in range(len(term)):
+      if term[index] != " ":
+        censor += "*"
+      else:
+        censor += " "
+    if term_lower in email_lower:
+      email = email.replace(term, censor)
+    if term_title in email:
+      email = email.replace(term_title, censor)
+    if term_capitalized in email:
+      email = email.replace(term_capitalized, censor)
+    if term_upper in email:
+      email = email.replace(term_upper, censor)
+  return email
+
+#Test on email 2:
+#print(censor_email_two(email_two, proprietary_terms))
+
+#FOR TASK 3:
+#list of negative words to censor
+negative_words = ["concerned", "behind", "danger", "dangerous", "alarming", "alarmed", "out of control", "help", "unhappy", "bad", "upset", "awful", "broken", "damage", "damaging", "dismal", "distressed", "distressing", "concerning", "horrible", "horribly", "questionable"]
+
+#list of punctuation to take into account when splitting email into a list of strings
+punctuation_list = [",", ".", "?", "/", "\\", ":", "(", ")", "!", "%"]
+
+#Function to censor "negative" word after occurring twice:
+def censor_email_three(email, list_to_censor, negative_list):
+  email_words = email.split()
+  email_words_clean = []
+  #remove punctuations from list of words in email so we have a clean list
+  for index in range(len(email_words)):
+    if any(punctuation in email_words[index] for punctuation in punctuation_list):
+      clean_word = email_words[index].strip(",.?/:()!%\\")
+    else:
+      clean_word = email_words[index]
+    clean_word_lower = clean_word.lower()
+    email_words_clean.append(clean_word_lower)
+  #remove negative words
+  counter = 0
+  for index in range(len(email_words)):
+    if email_words_clean[index] in negative_list:
+      counter += 1
+      if counter > 2:
+        word_to_censor = email_words_clean[index]
+        censor = ""
+        for censor_index in range(len(word_to_censor)):
+          censor += "*"
+        email_words[index] = email_words[index].replace(word_to_censor, censor)
+  email_new = " ".join(email_words)
+  #remove proprietary terms
+  email_new_lower = email_new.lower()
+  for term in list_to_censor:
+    term_lower = term.lower()
+    term_title = term.title()
+    term_capitalized = term.capitalize()
+    term_upper = term.upper()
+    censor = ""
+    for index in range(len(term)):
+      if term[index] != " ":
+        censor += "*"
+      else:
+        censor += " "
+    if term_lower in email_new_lower:
+      email_new = email_new.replace(term, censor)
+    if term_title in email:
+      email_new = email_new.replace(term_title, censor)
+    if term_capitalized in email:
+      email_new = email_new.replace(term_capitalized, censor)
+    if term_upper in email:
+      email_new = email_new.replace(term_upper, censor)
+  return email_new
+
+#Test on email 3:
+#print(censor_email_three(email_three, proprietary_terms, negative_words))
+
+#FOR TASK 4:
+total_censor_list = proprietary_terms + negative_words
+
+#Function that censors all negative words, proprietary terms, and any words that come before and after term from those lists
+def censor_email_four(email, list_to_censor):
+  #remove censor list words
+  email_lower = email.lower()
+  for term in list_to_censor:
+    term_lower = term.lower()
+    term_title = term.title()
+    term_capitalized = term.capitalize()
+    term_upper = term.upper()
+    censor = ""
+    for index in range(len(term)):
+      if term[index] != " ":
+        censor += "*"
+      else:
+        censor += " "
+    if term_lower in email_lower:
+      email = email.replace(term, censor)
+    if term_title in email:
+      email = email.replace(term_title, censor)
+    if term_capitalized in email:
+      email = email.replace(term_capitalized, censor)
+    if term_upper in email:
+      email = email.replace(term_upper, censor)
+  #remove punctuations from list of words in email so we have a clean list
+  email_words = email.split()
+  email_words_clean = []
+  for index in range(len(email_words)):
+    if any(punctuation in email_words[index] for punctuation in punctuation_list):
+      clean_word = email_words[index].strip(",.?/:()!%\\")
+    else:
+      clean_word = email_words[index]
+    clean_word_lower = clean_word.lower()
+    email_words_clean.append(clean_word_lower)
+  #censor word before list word
+  for index in range(len(email_words)):
+    censor_before = ""
+    if email_words_clean[index].startswith("*") == True:
+      word_before = email_words[index-1]
+      for censor_index in range(len(word_before)):
+        censor_before += "*"
+      email_words[index-1] = email_words[index-1].replace(word_before, censor_before)
+  #censor word after list word
+  for index in range(len(email_words)):
+    censor_after = ""
+    if email_words_clean[index].startswith("*") == True:
+      word_after = email_words[index+1]
+      for censor_index in range(len(word_after)):
+        censor_after += "*"
+      email_words[index+1] = email_words[index+1].replace(word_after, censor_after)
+  return " ".join(email_words) 
+
+
+
+
+#Test on email 4:
+#print(censor_email_four(email_four, total_censor_list))
